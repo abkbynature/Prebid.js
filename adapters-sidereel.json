@@ -1,0 +1,11 @@
+[
+    "aol",
+    "appnexus",
+    "openx",
+    "rhythmone",
+    {
+      "appnexus": {
+        "alias": "defymedia"
+      }
+    }
+]

@@ -3,8 +3,8 @@
 // Generic settings.
 var rpn = Math.floor((Math.random() * 100) + 1),
     deviceType = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
-    trace = true,
-    version = '0.53',
+    trace = false,
+    version = '0.55',
     pub = '6810',
     placement = '60681',
     ra,

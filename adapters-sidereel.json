@@ -7,5 +7,10 @@
       "appnexus": {
         "alias": "defymedia"
       }
+    },
+    {
+      "rhythmone": {
+        "supportedMediaTypes": ["video"]
+      }
     }
 ]

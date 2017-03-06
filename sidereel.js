@@ -14,6 +14,7 @@ var rpn = Math.floor((Math.random() * 100) + 1),
 
 // Prebid settings.
 var PREBID_TIMEOUT = 5000,
+    SILENT_VIDEO_AUCTION = true,
     PREBID_MAX_ADUNITS = 7,
     PREBID_MAX_SIZES = 7,
     PREBID_AUCTIONENDED = false,
@@ -30,10 +31,6 @@ var PREBID_TIMEOUT = 5000,
                     bidder: 'appnexus',
                     params: { placementId: '10040811' }
                 },
-                // {
-                //     bidder: 'openx',
-                //     params: { unit: '538622959', jstag_url: 'http://allmedia-d.openx.net/w/1.0/jstag?nc=22732481-SideReel' }
-                // },
                 {
                     bidder: 'openx',
                     params: { unit: '538622959', delDomain: 'allmedia-d.openx.net' }
@@ -2023,6 +2020,23 @@ function setDEFYMEDIAPlacement(adUnit) {
 
 }
 
+// Silent auction for Video demand.
+function silentVideoAuction() {
+
+    log('[logger] silentVideoAuction');
+    ADUNITS.push({
+        code: 'sidereel-video-ad',
+        sizes: [[640, 480]],
+        mediaType: 'video',
+        bids: [
+            {
+                bidder: 'rhythmone',
+                params: { placementId: '49167' }
+            }
+        ]
+    });
+}
+
 setupGA();
 setupRA();
 
@@ -2060,6 +2074,19 @@ pbjs.que.push(function() {
     });
 
     pbjs.onEvent('bidResponse', function (data) {
+
+        if (SILENT_VIDEO_AUCTION) {
+
+            // Tracking for silent video auction.
+            if (data.adUnitCode === 'sidereel-video-ad') {
+                track('silentVideoAuction', 'bidResponse', data.bidderCode + '/' + (data.statusMessage === 'Bid available' ? 'yes' : 'no'), data.timeToRespond, gaSampleRate);
+                if (data.cpm) {
+                    track('silentVideoAuction', 'offer', data.bidderCode, (parseFloat(data.cpm).toFixed(2) * 100), gaSampleRate);
+                }
+                return;
+            }
+
+        }
 
         track('pbEvents', 'bidResponse', data.bidderCode + '/' + (data.statusMessage === 'Bid available' ? 'yes' : 'no'), data.timeToRespond, gaSampleRate);
         ra({ event: 'bidResponse', bidder: data.bidderCode, responseTime: data.timeToRespond, bidStatus: data.statusMessage === 'Bid available' ? '1' : '0', late: PREBID_AUCTIONENDED ? '1' : '0', cpm: (parseFloat(data.cpm || 0).toFixed(2) * 100) }, raSampleRate);
@@ -2103,6 +2130,13 @@ pbjs.que.push(function() {
         });
     }
 
+});
+
+// Set static Prebid commands.
+pbjs.que.push(function() {
+    if (SILENT_VIDEO_AUCTION) {
+        silentVideoAuction();
+    }
 });
 
 // Override some googletag APIs.

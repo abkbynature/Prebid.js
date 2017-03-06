@@ -3,7 +3,7 @@
 // Generic settings.
 var rpn = Math.floor((Math.random() * 100) + 1),
     deviceType = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
-    trace = false,
+    trace = true,
     version = '0.55',
     pub = '6810',
     placement = '60681',
@@ -15,7 +15,7 @@ var rpn = Math.floor((Math.random() * 100) + 1),
 // Prebid settings.
 var PREBID_TIMEOUT = 5000,
     SILENT_VIDEO_AUCTION = true,
-    PREBID_MAX_ADUNITS = 7,
+    PREBID_MAX_ADUNITS = 12,
     PREBID_MAX_SIZES = 7,
     PREBID_AUCTIONENDED = false,
     PREBID_AUCTIONSTARTED = false,
@@ -2174,7 +2174,7 @@ googletag.cmd.push(function() {
             track('DFP', 'defineSlot', arguments[0], null, gaSampleRate);
 
             if (ADUNITS.length >= PREBID_MAX_ADUNITS) {
-                return;
+                return googletag.odefineSlot.apply(this, arguments);
             }
 
             // Check if the ad slot matches a prebid ad unit, and add it to the registration queue if so.
